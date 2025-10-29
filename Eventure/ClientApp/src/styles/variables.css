@@ -1,0 +1,10 @@
+:root {
+  --bg-color: #FFE1AF;
+  --accent-light: #E2B59A;
+  --accent-mid: #B77466;
+  --accent-dark: #957C62;
+  --green: #6CB46C;
+  --text-dark: #3E3E3E;
+  --text-light: #6B6B6B;
+  --card-shadow: rgba(0, 0, 0, 0.15);
+}
