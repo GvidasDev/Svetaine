@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using Eventure.Helpers;
 
 namespace Eventure.Models
 {
@@ -28,6 +27,7 @@ namespace Eventure.Models
 
         public bool IsPublic { get; set; } = true;
 
-        public int RemainingDays => EventHelper.CalculateRemainingDays(Date);
+        public int UserId { get; set; }
+        public int RemainingDays { get; set; }
     }
 }

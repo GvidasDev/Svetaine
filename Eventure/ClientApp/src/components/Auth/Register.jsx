@@ -1,0 +1,92 @@
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import authApi from "../../api/authApi";
+
+export default function Register() {
+  const navigate = useNavigate();
+  const [form, setForm] = useState({
+    username: "",
+    email: "",
+    firstName: "",
+    lastName: "",
+    password: "",
+    confirmPassword: ""
+  });
+  const [err, setErr] = useState("");
+
+  const submit = async (e) => {
+    e.preventDefault();
+    setErr("");
+    try {
+      const res = await authApi.register(form);
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("username", res.data.username);
+      navigate("/");
+    } catch (ex) {
+      setErr("Registration failed.");
+    }
+  };
+
+  return (
+    <div className="edit-container">
+      <div className="edit-form" style={{ maxWidth: 480 }}>
+        <h2 style={{ marginTop: 0 }}>Register</h2>
+
+        <form onSubmit={submit} className="event-form" style={{ gap: "0.8rem" }}>
+          <input
+            type="text"
+            placeholder="Username"
+            value={form.username}
+            onChange={(e) => setForm({ ...form, username: e.target.value })}
+            required
+          />
+          <input
+            type="email"
+            placeholder="Email"
+            value={form.email}
+            onChange={(e) => setForm({ ...form, email: e.target.value })}
+            required
+          />
+          <input
+            type="text"
+            placeholder="First name"
+            value={form.firstName}
+            onChange={(e) => setForm({ ...form, firstName: e.target.value })}
+            required
+          />
+          <input
+            type="text"
+            placeholder="Last name"
+            value={form.lastName}
+            onChange={(e) => setForm({ ...form, lastName: e.target.value })}
+            required
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={form.password}
+            onChange={(e) => setForm({ ...form, password: e.target.value })}
+            required
+          />
+          <input
+            type="password"
+            placeholder="Confirm password"
+            value={form.confirmPassword}
+            onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })}
+            required
+          />
+
+          {err && <small style={{ color: "var(--accent-mid)" }}>{err}</small>}
+
+          <button type="submit" className="save-btn">Create account</button>
+        </form>
+
+        <div style={{ marginTop: "0.75rem", textAlign: "right" }}>
+          <Link to="/login" style={{ color: "var(--accent-mid)" }}>
+            Back to login
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}

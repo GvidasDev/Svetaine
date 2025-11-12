@@ -1,11 +1,15 @@
-using Microsoft.AspNetCore.Mvc;
-using Eventure.Models;
+using System.Security.Claims;
 using Eventure.Interfaces;
+using Eventure.Models;
+using Eventure.Dtos;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Eventure.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class EventsController : ControllerBase
     {
         private readonly IEventService _service;
@@ -15,48 +19,65 @@ namespace Eventure.Controllers
             _service = service;
         }
 
+        private int CurrentUserId => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+        // GET: api/events
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<ActionResult<IEnumerable<EventDto>>> GetAll()
         {
-            var events = await _service.GetAllAsync();
-            return Ok(events);
+            var all = await _service.GetAllAsync();
+            // tik prisijungusio vartotojo eventai
+            var filtered = all.Where(e => e.UserId == CurrentUserId);
+            return Ok(filtered);
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        // GET: api/events/5
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult<EventDto>> GetById(int id)
         {
             var ev = await _service.GetByIdAsync(id);
-            if (ev == null)
+            if (ev == null || ev.UserId != CurrentUserId)
                 return NotFound();
+
             return Ok(ev);
         }
 
+        // POST: api/events
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] EventComponent ev)
+        public async Task<ActionResult<EventComponent>> Create([FromBody] EventComponent ev)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
+            ev.Id = 0;
+            ev.UserId = CurrentUserId;
             var created = await _service.CreateAsync(ev);
+
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] EventComponent ev)
+        // PUT: api/events/5
+        [HttpPut("{id:int}")]
+        public async Task<ActionResult<EventComponent>> Update(int id, [FromBody] EventComponent update)
         {
-            var updated = await _service.UpdateAsync(id, ev);
-            if (updated == null)
+            var existing = await _service.GetByIdAsync(id);
+            if (existing == null || existing.UserId != CurrentUserId)
                 return NotFound();
+
+            update.UserId = CurrentUserId;
+            var updated = await _service.UpdateAsync(id, update);
+            if (updated == null) return NotFound();
 
             return Ok(updated);
         }
 
-        [HttpDelete("{id}")]
+        // DELETE: api/events/5
+        [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var success = await _service.DeleteAsync(id);
-            if (!success)
+            var existing = await _service.GetByIdAsync(id);
+            if (existing == null || existing.UserId != CurrentUserId)
                 return NotFound();
+
+            var success = await _service.DeleteAsync(id);
+            if (!success) return BadRequest();
 
             return NoContent();
         }

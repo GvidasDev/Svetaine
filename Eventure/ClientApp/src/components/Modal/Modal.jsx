@@ -1,15 +1,16 @@
-export default function Modal({ children, onClose }) {
+import React from "react";
+import "./ModalStyles.css";
+
+export default function Modal({ onClose, children }) {
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div
-        className="modal-content"
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <button className="modal-close" onClick={onClose}>
-          ✖
+          ✕
         </button>
         {children}
       </div>
     </div>
   );
 }
+

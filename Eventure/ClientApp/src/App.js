@@ -1,14 +1,19 @@
 import React, { useState } from "react";
 import { Routes, Route } from "react-router-dom";
+
 import EventList from "./components/Event/EventList";
-import EventModal from "./components/Event/EventModal";
+import EventForm from "./components/Event/EventForm";
 import EventEdit from "./components/Event/EventEdit";
+import Modal from "./components/Modal/Modal";
+import ProtectedRoute from "./components/Auth/ProtectedRoute";
+import Login from "./components/Auth/Login";
+import Register from "./components/Auth/Register";
+
 import "./styles/App.css";
 
 function App() {
   const [refresh, setRefresh] = useState(false);
   const [showModal, setShowModal] = useState(false);
-
   const reload = () => setRefresh(!refresh);
 
   return (
@@ -16,30 +21,39 @@ function App() {
       <h1>Events</h1>
 
       <Routes>
+        <Route path="/login" element={<Login />}/>
+        <Route path="/register" element={<Register />}/>
+
         <Route
           path="/"
           element={
-            <>
-              <EventList key={refresh} />
-
-              <button
-                className="add-event-btn"
-                onClick={() => setShowModal(true)}
-              >
-                +
-              </button>
-
-              {showModal && (
-                <EventModal
-                  onClose={() => setShowModal(false)}
-                  onSuccess={reload}
-                />
-              )}
-            </>
+            <ProtectedRoute>
+              <>
+                <EventList key={refresh} />
+                <button className="add-event-btn" onClick={() => setShowModal(true)}>+</button>
+                {showModal && (
+                  <Modal onClose={() => setShowModal(false)}>
+                    <EventForm
+                      onSubmitSuccess={() => {
+                        setShowModal(false);
+                        reload();
+                      }}
+                    />
+                  </Modal>
+                )}
+              </>
+            </ProtectedRoute>
           }
         />
 
-        <Route path="/edit/:id" element={<EventEdit />} />
+        <Route
+          path="/edit/:id"
+          element={
+            <ProtectedRoute>
+              <EventEdit />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </div>
   );

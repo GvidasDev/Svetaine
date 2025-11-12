@@ -26,11 +26,10 @@ export default function EventForm({ onSubmitSuccess }) {
         placeholder="Description"
         value={description}
         onChange={(e) => setDescription(e.target.value)}
-        required
       />
       <input
         type="date"
-        value={date}
+        min={new Date().toISOString().split("T")[0]}
         onChange={(e) => setDate(e.target.value)}
         required
       />

@@ -1,9 +1,12 @@
-@import "/src/styles/variables.css";
+@import "../../styles/variables.css";
 
 .modal-overlay {
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background-color: rgba(0,0,0,0.35);
+  top: 0; 
+  left: 0; 
+  right: 0; 
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.35);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -17,78 +20,58 @@
 }
 
 .modal-content {
+  position: relative;
   background-color: var(--bg-color);
-  padding: 2rem 2.5rem;
+  border: 2px solid var(--accent-mid);
   border-radius: 12px;
-  border: 1px solid var(--accent-mid);
+  box-shadow: 0 6px 14px var(--card-shadow);
+  padding: 2rem 2.5rem;
   width: 400px;
   max-width: 90%;
-  box-shadow: 0 5px 16px var(--card-shadow);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  text-align: center;
+  transition: transform 0.2s ease;
 }
 
-/* CLOSE BUTTON */
-.close-btn {
+.modal-content:hover {
+  transform: scale(1.01);
+}
+
+.modal-close {
   position: absolute;
   top: 10px;
   right: 15px;
   background: none;
   border: none;
-  font-size: 1.3rem;
-  cursor: pointer;
   color: var(--accent-mid);
-  transition: transform 0.2s ease;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: color 0.2s ease;
 }
 
-.close-btn:hover {
+.modal-close:hover {
   color: var(--accent-dark);
-  transform: scale(1.1);
-}
-
-/* FORM */
-.event-form {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  gap: 1rem;
 }
 
 .event-form input,
 .event-form textarea {
   width: 100%;
-  max-width: 320px;
   padding: 0.7rem;
+  margin-bottom: 1rem;
   border: 1px solid var(--accent-mid);
   border-radius: 8px;
-  background: #fffaf2;
-  font-family: inherit;
-  font-size: 1rem;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.event-form input:focus,
-.event-form textarea:focus {
-  border-color: var(--accent-dark);
-  box-shadow: 0 0 4px rgba(183, 116, 102, 0.4);
-  outline: none;
+  background: #fffdf9;
 }
 
 .submit-btn {
-  background-color: var(--green);
-  color: white;
-  font-weight: 600;
-  padding: 0.8rem 1.5rem;
+  background: var(--green);
   border: none;
+  color: white;
+  padding: 0.8rem 1.5rem;
   border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease;
 }
 
 .submit-btn:hover {
-  background-color: #5aa85a;
-  transform: scale(1.03);
+  background: #5fa75f;
 }
