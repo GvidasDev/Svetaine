@@ -18,7 +18,7 @@ namespace Eventure.Services
         public async Task<IEnumerable<EventDto>> GetAllAsync()
         {
             var today = DateTime.UtcNow.Date;
-
+            
             return await _context.Events
                 .Select(e => new EventDto
                 {
@@ -28,7 +28,6 @@ namespace Eventure.Services
                     Date = e.Date,
                     ImageUrl = e.ImageUrl,
                     InvitedUsers = e.InvitedUsers,
-                    IsPublic = e.IsPublic,
                     UserId = e.UserId,
                     Creator = _context.Users
                         .Where(u => u.Id == e.UserId)
@@ -58,7 +57,6 @@ namespace Eventure.Services
                 Date = e.Date,
                 ImageUrl = e.ImageUrl,
                 InvitedUsers = e.InvitedUsers,
-                IsPublic = e.IsPublic,
                 UserId = e.UserId,
                 Creator = creator,
                 RemainingDays = Math.Max(0, (int)Math.Ceiling((e.Date.Date - today).TotalDays))
@@ -82,7 +80,6 @@ namespace Eventure.Services
             existing.Date = ev.Date;
             existing.ImageUrl = ev.ImageUrl;
             existing.InvitedUsers = ev.InvitedUsers;
-            existing.IsPublic = ev.IsPublic;
 
             await _context.SaveChangesAsync();
             return existing;

@@ -3,7 +3,7 @@ import EventCard from "./EventCard";
 import eventApi from "../../api/eventApi";
 import "../../styles/App.css";
 
-export default function EventList() {
+export default function EventList(refresh) {
   const [events, setEvents] = useState([]);
 
   const fetchEvents = async () => {

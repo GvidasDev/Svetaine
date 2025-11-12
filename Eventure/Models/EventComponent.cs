@@ -20,14 +20,8 @@ namespace Eventure.Models
         [MaxLength(500)]
         public string? ImageUrl { get; set; }
 
-        [MaxLength(100)]
-        public string Creator { get; set; } = string.Empty;
-
         public string? InvitedUsers { get; set; }
 
-        public bool IsPublic { get; set; } = true;
-
         public int UserId { get; set; }
-        public int RemainingDays { get; set; }
     }
 }

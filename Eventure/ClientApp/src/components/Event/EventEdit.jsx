@@ -63,7 +63,6 @@ export default function EventEdit() {
           name="description"
           value={event.description}
           onChange={handleChange}
-          required
         />
 
         <label>Date</label>
@@ -98,16 +97,6 @@ export default function EventEdit() {
           value={event.invitedUsers}
           onChange={handleChange}
         />
-
-        <label className="checkbox-label">
-          <input
-            type="checkbox"
-            name="isPublic"
-            checked={event.isPublic}
-            onChange={handleChange}
-          />
-          Public Event
-        </label>
 
         <button type="submit" className="save-btn">
           Save Changes
