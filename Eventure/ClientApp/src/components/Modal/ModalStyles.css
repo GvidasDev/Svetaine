@@ -1,55 +1,94 @@
+@import "/src/styles/variables.css";
+
 .modal-overlay {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
-  background-color: rgba(0,0,0,0.3);
+  background-color: rgba(0,0,0,0.35);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .modal-content {
-  background: var(--bg-color);
-  padding: 2rem;
+  background-color: var(--bg-color);
+  padding: 2rem 2.5rem;
   border-radius: 12px;
-  box-shadow: 0 4px 10px var(--card-shadow);
+  border: 1px solid var(--accent-mid);
   width: 400px;
   max-width: 90%;
-}
-
-header {
+  box-shadow: 0 5px 16px var(--card-shadow);
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
-  margin-bottom: 1rem;
+  justify-content: center;
 }
 
+/* CLOSE BUTTON */
 .close-btn {
+  position: absolute;
+  top: 10px;
+  right: 15px;
   background: none;
   border: none;
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   cursor: pointer;
+  color: var(--accent-mid);
+  transition: transform 0.2s ease;
+}
+
+.close-btn:hover {
+  color: var(--accent-dark);
+  transform: scale(1.1);
+}
+
+/* FORM */
+.event-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  gap: 1rem;
 }
 
 .event-form input,
 .event-form textarea {
   width: 100%;
+  max-width: 320px;
   padding: 0.7rem;
-  margin-bottom: 1rem;
-  border: 1px solid var(--accent-dark);
+  border: 1px solid var(--accent-mid);
   border-radius: 8px;
-  background: #fffdf9;
+  background: #fffaf2;
+  font-family: inherit;
+  font-size: 1rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.event-form input:focus,
+.event-form textarea:focus {
+  border-color: var(--accent-dark);
+  box-shadow: 0 0 4px rgba(183, 116, 102, 0.4);
+  outline: none;
 }
 
 .submit-btn {
-  background: var(--accent-mid);
-  border: none;
+  background-color: var(--green);
   color: white;
+  font-weight: 600;
   padding: 0.8rem 1.5rem;
+  border: none;
   border-radius: 8px;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .submit-btn:hover {
-  background: var(--accent-dark);
+  background-color: #5aa85a;
+  transform: scale(1.03);
 }

@@ -20,6 +20,9 @@ namespace Eventure.Migrations
                     Title = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
                     Description = table.Column<string>(type: "TEXT", maxLength: 500, nullable: true),
                     Date = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    ImageUrl = table.Column<string>(type: "TEXT", maxLength: 500, nullable: true),
+                    Creator = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
+                    InvitedUsers = table.Column<string>(type: "TEXT", nullable: true),
                     IsPublic = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>

@@ -1,8 +1,9 @@
 import React, { useState } from "react";
+import { Routes, Route } from "react-router-dom";
 import EventList from "./components/Event/EventList";
-import EventForm from "./components/Event/EventForm";
-import Modal from "./components/Modal/Modal";
-import "./App.css";
+import EventModal from "./components/Event/EventModal";
+import EventEdit from "./components/Event/EventEdit";
+import "./styles/App.css";
 
 function App() {
   const [refresh, setRefresh] = useState(false);
@@ -12,23 +13,34 @@ function App() {
 
   return (
     <div className="app-container">
-      <h1>🎬 Event Manager</h1>
-      <EventList key={refresh} />
-      
-      <button className="add-event-btn" onClick={() => setShowModal(true)}>
-        +
-      </button>
+      <h1>Events</h1>
 
-      {showModal && (
-        <Modal onClose={() => setShowModal(false)}>
-          <EventForm
-            onSubmitSuccess={() => {
-              setShowModal(false);
-              reload();
-            }}
-          />
-        </Modal>
-      )}
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <>
+              <EventList key={refresh} />
+
+              <button
+                className="add-event-btn"
+                onClick={() => setShowModal(true)}
+              >
+                +
+              </button>
+
+              {showModal && (
+                <EventModal
+                  onClose={() => setShowModal(false)}
+                  onSuccess={reload}
+                />
+              )}
+            </>
+          }
+        />
+
+        <Route path="/edit/:id" element={<EventEdit />} />
+      </Routes>
     </div>
   );
 }

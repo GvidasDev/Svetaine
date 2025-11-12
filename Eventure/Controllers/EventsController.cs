@@ -2,48 +2,63 @@ using Microsoft.AspNetCore.Mvc;
 using Eventure.Models;
 using Eventure.Interfaces;
 
-namespace Eventure.Controllers;
-
-[ApiController]
-[Route("api/[controller]")]
-public class EventsController : ControllerBase
+namespace Eventure.Controllers
 {
-    private readonly IEventService _service;
-
-    public EventsController(IEventService service)
+    [ApiController]
+    [Route("api/[controller]")]
+    public class EventsController : ControllerBase
     {
-        _service = service;
-    }
+        private readonly IEventService _service;
 
-    [HttpGet]
-    public async Task<IActionResult> GetAll() =>
-        Ok(await _service.GetAllAsync());
+        public EventsController(IEventService service)
+        {
+            _service = service;
+        }
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(int id)
-    {
-        var ev = await _service.GetByIdAsync(id);
-        return ev == null ? NotFound() : Ok(ev);
-    }
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var events = await _service.GetAllAsync();
+            return Ok(events);
+        }
 
-    [HttpPost]
-    public async Task<IActionResult> Create(EventComponent ev)
-    {
-        var created = await _service.CreateAsync(ev);
-        return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
-    }
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var ev = await _service.GetByIdAsync(id);
+            if (ev == null)
+                return NotFound();
+            return Ok(ev);
+        }
 
-    [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, EventComponent ev)
-    {
-        var updated = await _service.UpdateAsync(id, ev);
-        return updated == null ? NotFound() : Ok(updated);
-    }
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] EventComponent ev)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
-    {
-        var success = await _service.DeleteAsync(id);
-        return success ? NoContent() : NotFound();
+            var created = await _service.CreateAsync(ev);
+            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, [FromBody] EventComponent ev)
+        {
+            var updated = await _service.UpdateAsync(id, ev);
+            if (updated == null)
+                return NotFound();
+
+            return Ok(updated);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var success = await _service.DeleteAsync(id);
+            if (!success)
+                return NotFound();
+
+            return NoContent();
+        }
     }
 }

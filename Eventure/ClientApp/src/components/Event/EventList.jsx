@@ -1,5 +1,7 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import EventCard from "./EventCard";
 import eventApi from "../../api/eventApi";
+import "../../styles/App.css";
 
 export default function EventList() {
   const [events, setEvents] = useState([]);
@@ -16,11 +18,12 @@ export default function EventList() {
   return (
     <div className="event-list">
       {events.map((ev) => (
-        <div key={ev.id} className="event-card">
-          <h3>{ev.title}</h3>
-          <p>{ev.description}</p>
-          <small>{new Date(ev.date).toISOString().split("T")[0]}</small>
-        </div>
+        <EventCard
+          key={ev.id}
+          event={ev}
+          onEdit={(ev) => console.log("Edit:", ev)}
+          onDelete={fetchEvents}
+        />
       ))}
     </div>
   );

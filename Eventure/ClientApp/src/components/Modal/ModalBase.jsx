@@ -7,7 +7,7 @@ export default function ModalBase({ title, children, onClose }) {
         <header>
           <h3>{title}</h3>
           <button className="close-btn" onClick={onClose}>
-            ✕
+            ✖
           </button>
         </header>
         <main>{children}</main>

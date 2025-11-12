@@ -1,16 +1,17 @@
 import ModalBase from "../Modal/ModalBase";
+import EventForm from "./EventForm";
+import "../../styles/App.css";
 
-export default function EventModal({ onClose }) {
+
+export default function EventModal({ onClose, onSuccess }) {
   return (
-    <ModalBase title="Create Event" onClose={onClose}>
-      <form className="event-form">
-        <input type="text" placeholder="Event title" required />
-        <textarea placeholder="Description" />
-        <input type="date" />
-        <button type="submit" className="submit-btn">
-          Save Event
-        </button>
-      </form>
+    <ModalBase onClose={onClose}>
+      <EventForm
+        onSubmitSuccess={() => {
+          onSuccess();
+          onClose();
+        }}
+      />
     </ModalBase>
   );
 }

@@ -7,4 +7,16 @@
   --text-dark: #3E3E3E;
   --text-light: #6B6B6B;
   --card-shadow: rgba(0, 0, 0, 0.15);
+
+  --green-light: #e3f5e6;
+  --green-hover: #5fa75f;
+  --green-strong: #5aa85a;
+
+  --invite-hover: #dca991;
+  --delete-color: #e06b6b;
+  --delete-hover: #c75858;
+
+  --form-bg: #fffaf2;
+  --card-bg: #fff9f3;
+  --page-bg-light: #fff4e2;
 }
