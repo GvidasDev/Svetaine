@@ -21,7 +21,6 @@ namespace Eventure.Controllers
 
         private int CurrentUserId => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
-        // GET: api/events
         [HttpGet]
         public async Task<ActionResult<IEnumerable<EventDto>>> GetAll()
         {
@@ -31,7 +30,6 @@ namespace Eventure.Controllers
             return Ok(filtered);
         }
 
-        // GET: api/events/5
         [HttpGet("{id:int}")]
         public async Task<ActionResult<EventDto>> GetById(int id)
         {
@@ -42,7 +40,6 @@ namespace Eventure.Controllers
             return Ok(ev);
         }
 
-        // POST: api/events
         [HttpPost]
         public async Task<ActionResult<EventComponent>> Create([FromBody] EventComponent ev)
         {
@@ -53,7 +50,6 @@ namespace Eventure.Controllers
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
-        // PUT: api/events/5
         [HttpPut("{id:int}")]
         public async Task<ActionResult<EventComponent>> Update(int id, [FromBody] EventComponent update)
         {
@@ -68,7 +64,6 @@ namespace Eventure.Controllers
             return Ok(updated);
         }
 
-        // DELETE: api/events/5
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {

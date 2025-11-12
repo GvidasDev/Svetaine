@@ -1,11 +1,7 @@
-using BCrypt.Net;
-using Eventure.Data;
 using Eventure.Dtos.Auth;
-using Eventure.Helpers;
-using Eventure.Models;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using Eventure.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Eventure.Controllers
 {
@@ -13,72 +9,45 @@ namespace Eventure.Controllers
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
-        private readonly DatabaseContext _db;
-        private readonly JwtTokenGenerator _jwt;
+        private readonly IAuthService _authService;
 
-        public AuthController(DatabaseContext db, JwtTokenGenerator jwt)
+        public AuthController(IAuthService authService)
         {
-            _db = db;
-            _jwt = jwt;
+            _authService = authService;
         }
 
         [HttpPost("register")]
         public async Task<ActionResult<AuthResponse>> Register(Register req)
         {
-            if (req.Password != req.ConfirmPassword)
-                return BadRequest("Passwords do not match.");
-
-            if (await _db.Users.AnyAsync(u => u.Username == req.Username))
-                return BadRequest("Username already taken.");
-
-            if (await _db.Users.AnyAsync(u => u.Email == req.Email))
-                return BadRequest("Email already in use.");
-
-            var user = new User
+            try
             {
-                Username = req.Username,
-                Email = req.Email,
-                FirstName = req.FirstName,
-                LastName = req.LastName,
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword(req.Password)
-            };
-
-            _db.Users.Add(user);
-            await _db.SaveChangesAsync();
-
-            var token = _jwt.Generate(user);
-            return Ok(new AuthResponse
+                var result = await _authService.RegisterAsync(req);
+                return Ok(result);
+            }
+            catch (Exception ex)
             {
-                Token = token,
-                UserId = user.Id,
-                Username = user.Username,
-                Email = user.Email
-            });
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost("login")]
         public async Task<ActionResult<AuthResponse>> Login(Login req)
         {
-            var user = await _db.Users.FirstOrDefaultAsync(u => u.Username == req.Username);
-            if (user is null) return Unauthorized("Invalid credentials.");
-
-            if (!BCrypt.Net.BCrypt.Verify(req.Password, user.PasswordHash))
-                return Unauthorized("Invalid credentials.");
-
-            var token = _jwt.Generate(user);
-            return Ok(new AuthResponse
+            try
             {
-                Token = token,
-                UserId = user.Id,
-                Username = user.Username,
-                Email = user.Email
-            });
+                var result = await _authService.LoginAsync(req);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return Unauthorized(ex.Message);
+            }
         }
 
         [HttpGet("verify")]
         [Authorize]
-        public IActionResult VerifyToken()
-        {   
+        public ActionResult VerifyToken()
+        {
             return Ok(new { message = "Token valid" });
         }
     }
