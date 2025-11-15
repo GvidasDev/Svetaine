@@ -1,36 +1,47 @@
 import React, { useState } from "react";
 import { Routes, Route } from "react-router-dom";
 
+import Layout from "./components/Layout/Layout";
+
 import EventList from "./components/Event/EventList";
 import EventForm from "./components/Event/EventForm";
 import EventEdit from "./components/Event/EventEdit";
-import Modal from "./components/Modal/Modal";
+
 import ProtectedRoute from "./components/Auth/ProtectedRoute";
 import Login from "./components/Auth/Login";
 import Register from "./components/Auth/Register";
+
+import Modal from "./components/Modal/Modal";
 
 import "./styles/App.css";
 
 function App() {
   const [refresh, setRefresh] = useState(false);
   const [showModal, setShowModal] = useState(false);
+
   const reload = () => setRefresh(!refresh);
 
   return (
     <div className="app-container">
-      <h1>Events</h1>
-
       <Routes>
-        <Route path="/login" element={<Login />}/>
-        <Route path="/register" element={<Register />}/>
+        
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
 
         <Route
           path="/"
           element={
             <ProtectedRoute>
-              <>
+              <Layout>
                 <EventList key={refresh} />
-                <button className="add-event-btn" onClick={() => setShowModal(true)}>+</button>
+
+                <button
+                  className="add-event-btn"
+                  onClick={() => setShowModal(true)}
+                >
+                  +
+                </button>
+
                 {showModal && (
                   <Modal onClose={() => setShowModal(false)}>
                     <EventForm
@@ -41,7 +52,7 @@ function App() {
                     />
                   </Modal>
                 )}
-              </>
+              </Layout>
             </ProtectedRoute>
           }
         />
@@ -50,10 +61,13 @@ function App() {
           path="/edit/:id"
           element={
             <ProtectedRoute>
-              <EventEdit />
+              <Layout>
+                <EventEdit />
+              </Layout>
             </ProtectedRoute>
           }
         />
+
       </Routes>
     </div>
   );

@@ -33,7 +33,7 @@ export default function EventForm({ onSubmitSuccess }) {
         onChange={(e) => setDate(e.target.value)}
         required
       />
-      <button type="submit">Save</button>
+      <button type="submit" className="save-btn">Save</button>
     </form>
   );
 }
