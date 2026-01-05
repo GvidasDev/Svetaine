@@ -11,6 +11,8 @@ import ProtectedRoute from "./components/Auth/ProtectedRoute";
 import Login from "./components/Auth/Login";
 import Register from "./components/Auth/Register";
 
+import Account from "./components/Account/Account";
+
 import TaskPage from "./components/Task/TaskPage";
 
 import Modal from "./components/Modal/Modal";
@@ -76,6 +78,17 @@ function App() {
             <ProtectedRoute>
               <Layout>
                 <TaskPage />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/account"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <Account />
               </Layout>
             </ProtectedRoute>
           }

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import authApi from "../../api/authApi";
+import "../../styles/App.css";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -22,10 +23,10 @@ export default function Login() {
 
   return (
     <div className="edit-container">
-      <div className="edit-form" style={{ maxWidth: 420 }}>
-        <h2 style={{ marginTop: 0 }}>Login</h2>
+      <div className="edit-form auth-card auth-card--sm">
+        <h2 className="form-title">Login</h2>
 
-        <form onSubmit={submit} className="event-form" style={{ gap: "0.8rem" }}>
+        <form onSubmit={submit} className="auth-form">
           <input
             type="text"
             placeholder="Username"
@@ -41,15 +42,17 @@ export default function Login() {
             required
           />
 
-          {err && <small style={{ color: "var(--accent-mid)" }}>{err}</small>}
+          {err && <small className="form-error">{err}</small>}
 
           <button type="submit" className="save-btn">Login</button>
         </form>
 
-        <div style={{ marginTop: "0.75rem", display: "flex", justifyContent: "space-between" }}>
-          <Link to="/register" style={{ color: "var(--accent-mid)" }}>Register</Link>
+        <div className="auth-footer auth-footer--split">
+          <Link to="/register" className="auth-link">Register</Link>
+
           <button
             className="back-btn"
+            type="button"
             onClick={() => alert("Password reset flow to be implemented")}
           >
             Forgot password?

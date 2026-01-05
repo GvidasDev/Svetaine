@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import authApi from "../../api/authApi";
+import "../../styles/App.css";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -29,10 +30,10 @@ export default function Register() {
 
   return (
     <div className="edit-container">
-      <div className="edit-form" style={{ maxWidth: 480 }}>
-        <h2 style={{ marginTop: 0 }}>Register</h2>
+      <div className="edit-form auth-card auth-card--md">
+        <h2 className="form-title">Register</h2>
 
-        <form onSubmit={submit} className="event-form" style={{ gap: "0.8rem" }}>
+        <form onSubmit={submit} className="auth-form">
           <input
             type="text"
             placeholder="Username"
@@ -76,13 +77,13 @@ export default function Register() {
             required
           />
 
-          {err && <small style={{ color: "var(--accent-mid)" }}>{err}</small>}
+          {err && <small className="form-error">{err}</small>}
 
           <button type="submit" className="save-btn">Create account</button>
         </form>
 
-        <div style={{ marginTop: "0.75rem", textAlign: "right" }}>
-          <Link to="/login" style={{ color: "var(--accent-mid)" }}>
+        <div className="auth-footer auth-footer--right">
+          <Link to="/login" className="auth-link">
             Back to login
           </Link>
         </div>

@@ -43,6 +43,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<ITaskService, TaskService>();
 builder.Services.AddScoped<ITaskStateService, TaskStateService>();
+builder.Services.AddScoped<IAccountService, AccountService>();
 
 builder.Services.AddAuthorization();
 builder.Services.AddControllers();
