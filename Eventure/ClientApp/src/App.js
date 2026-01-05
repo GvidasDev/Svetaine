@@ -11,6 +11,8 @@ import ProtectedRoute from "./components/Auth/ProtectedRoute";
 import Login from "./components/Auth/Login";
 import Register from "./components/Auth/Register";
 
+import TaskPage from "./components/Task/TaskPage";
+
 import Modal from "./components/Modal/Modal";
 
 import "./styles/App.css";
@@ -63,6 +65,17 @@ function App() {
             <ProtectedRoute>
               <Layout>
                 <EventEdit />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/tasks"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <TaskPage />
               </Layout>
             </ProtectedRoute>
           }

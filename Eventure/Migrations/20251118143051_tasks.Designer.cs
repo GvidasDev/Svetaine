@@ -3,6 +3,7 @@ using System;
 using Eventure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Eventure.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20251118143051_tasks")]
+    partial class tasks
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.10");
@@ -87,9 +90,6 @@ namespace Eventure.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("INTEGER");
-
                     b.HasKey("Id");
 
                     b.ToTable("TaskStatuses");
@@ -98,20 +98,17 @@ namespace Eventure.Migrations
                         new
                         {
                             Id = 1,
-                            Name = "TODO",
-                            UserId = 0
+                            Name = "TODO"
                         },
                         new
                         {
                             Id = 2,
-                            Name = "IN PROGRESS",
-                            UserId = 0
+                            Name = "IN PROGRESS"
                         },
                         new
                         {
                             Id = 3,
-                            Name = "DONE",
-                            UserId = 0
+                            Name = "DONE"
                         });
                 });
 

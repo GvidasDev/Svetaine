@@ -25,7 +25,6 @@ namespace Eventure.Controllers
         public async Task<ActionResult<IEnumerable<EventDto>>> GetAll()
         {
             var all = await _service.GetAllAsync();
-            // tik prisijungusio vartotojo eventai
             var filtered = all.Where(e => e.UserId == CurrentUserId);
             return Ok(filtered);
         }

@@ -1,13 +1,12 @@
 import apiClient from "./apiClient";
 
-const base = "/events";
+const base = "/task";
 
-const eventApi = {
+const taskApi = {
   getAll: () => apiClient.get(base),
-  getById: (id) => apiClient.get(`${base}/${id}`),
   create: (data) => apiClient.post(base, data),
   update: (id, data) => apiClient.put(`${base}/${id}`, data),
   delete: (id) => apiClient.delete(`${base}/${id}`)
 };
 
-export default eventApi;
+export default taskApi;
