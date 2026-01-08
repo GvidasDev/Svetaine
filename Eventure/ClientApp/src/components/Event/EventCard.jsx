@@ -11,12 +11,23 @@ export default function EventCard({ event, onDelete }) {
     if (onDelete) onDelete();
   };
 
+  const API_ORIGIN = "https://localhost:7192"; // backend hostas
+  let imgSrc = null;
+
+  if (event.imageUrl) {
+    if (event.imageUrl.startsWith("http")) {
+      imgSrc = event.imageUrl;
+    } else {
+      imgSrc = API_ORIGIN + event.imageUrl; // pvz. /uploads/xxx.jpg
+    }
+  }
+
   return (
     <div className="event-card">
       <div className="event-left">
         <div className="event-image">
-          {event.imageUrl ? (
-            <img src={event.imageUrl} alt={event.title} />
+          {imgSrc ? (
+            <img src={imgSrc} alt={event.title} />
           ) : (
             <span>IMG</span>
           )}
@@ -25,8 +36,8 @@ export default function EventCard({ event, onDelete }) {
         <div className="event-details">
           <h3>{event.title}</h3>
           <p>{event.description}</p>
-          <small>📅 
-            {new Date(event.date).toLocaleDateString()}
+          <small>
+            📅 {new Date(event.date).toLocaleDateString()}
           </small>
           <br />
           <small>⏰ Remaining: {event.remainingDays} days</small>
@@ -51,8 +62,7 @@ export default function EventCard({ event, onDelete }) {
           👤 Creator: <strong>{event.creator ?? "—"}</strong>
         </span>
         <span className="invited">
-          🧑‍🤝‍🧑 Invited:{" "}
-          <strong>{event.invitedUsers ?? "—"}</strong>
+          🧑‍🤝‍🧑 Invited: <strong>{event.invitedUsers ?? "—"}</strong>
         </span>
       </div>
     </div>

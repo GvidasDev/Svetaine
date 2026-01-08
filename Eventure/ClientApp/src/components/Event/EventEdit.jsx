@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import eventApi from "../../api/eventApi";
+import uploadApi from "../../api/uploadApi";
 import "../../styles/App.css";
 
 export default function EventEdit() {
@@ -14,14 +15,28 @@ export default function EventEdit() {
     creator: "",
     imageUrl: "",
     invitedUsers: "",
-    isPublic: false,
+    isPublic: false
   });
+
+  const [preview, setPreview] = useState("");
+
+  const API_ORIGIN = "https://localhost:7192";
 
   useEffect(() => {
     const fetchEvent = async () => {
       const res = await eventApi.getById(id);
-      setEvent(res.data);
+      const data = res.data;
+
+      setEvent(data);
+
+      const img = data.imageUrl || "";
+      if (img) {
+        setPreview(img.startsWith("http") ? img : API_ORIGIN + img);
+      } else {
+        setPreview("");
+      }
     };
+
     fetchEvent();
   }, [id]);
 
@@ -29,7 +44,24 @@ export default function EventEdit() {
     const { name, value, type, checked } = e.target;
     setEvent((prev) => ({
       ...prev,
-      [name]: type === "checkbox" ? checked : value,
+      [name]: type === "checkbox" ? checked : value
+    }));
+  };
+
+  const handleFile = async (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+
+    // local preview
+    setPreview(URL.createObjectURL(file));
+
+    // upload to backend
+    const res = await uploadApi.uploadImage(file);
+
+    // backend returns /uploads/xxx.jpg
+    setEvent((prev) => ({
+      ...prev,
+      imageUrl: res.data.url
     }));
   };
 
@@ -69,7 +101,7 @@ export default function EventEdit() {
         <input
           type="date"
           name="date"
-          value={event.date.split("T")[0]}
+          value={event.date ? event.date.split("T")[0] : ""}
           onChange={handleChange}
           required
         />
@@ -78,23 +110,27 @@ export default function EventEdit() {
         <input
           type="text"
           name="creator"
-          value={event.creator}
+          value={event.creator ?? ""}
           onChange={handleChange}
         />
 
-        <label>Image URL</label>
-        <input
-          type="text"
-          name="imageUrl"
-          value={event.imageUrl}
-          onChange={handleChange}
-        />
+        <label>Image</label>
+
+        <div className="event-image">
+          {preview ? (
+            <img src={preview} alt="preview" />
+          ) : (
+            <span>IMG</span>
+          )}
+        </div>
+
+        <input type="file" accept="image/*" onChange={handleFile} />
 
         <label>Invited Users</label>
         <input
           type="text"
           name="invitedUsers"
-          value={event.invitedUsers}
+          value={event.invitedUsers ?? ""}
           onChange={handleChange}
         />
 

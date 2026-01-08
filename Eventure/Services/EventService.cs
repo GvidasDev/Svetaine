@@ -3,6 +3,7 @@ using Eventure.Interfaces;
 using Eventure.Models;
 using Eventure.Dtos;
 using Microsoft.EntityFrameworkCore;
+using Eventure.Helpers;
 
 namespace Eventure.Services
 {
@@ -33,7 +34,7 @@ namespace Eventure.Services
                         .Where(u => u.Id == e.UserId)
                         .Select(u => u.Username)
                         .FirstOrDefault() ?? "Unknown",
-                    RemainingDays = Math.Max(0, (int)Math.Ceiling((e.Date.Date - today).TotalDays))
+                    RemainingDays = EventHelper.CalculateRemainingDays(e.Date)
                 })
                 .ToListAsync();
         }
@@ -59,7 +60,7 @@ namespace Eventure.Services
                 InvitedUsers = e.InvitedUsers,
                 UserId = e.UserId,
                 Creator = creator,
-                RemainingDays = Math.Max(0, (int)Math.Ceiling((e.Date.Date - today).TotalDays))
+                RemainingDays = EventHelper.CalculateRemainingDays(e.Date)
             };
         }
 
