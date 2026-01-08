@@ -83,8 +83,10 @@ export default function Account() {
         </div>
       ) : (
         <form className="edit-form" onSubmit={onSave}>
+          <label><strong>Username</strong></label>
           <input value={form.username} disabled placeholder="Username" />
 
+          <label><strong>email</strong></label>
           <input
             value={form.email}
             onChange={onChange("email")}
@@ -93,6 +95,7 @@ export default function Account() {
             required
           />
 
+          <label><strong>First name</strong></label>
           <input
             value={form.firstName}
             onChange={onChange("firstName")}
@@ -100,6 +103,7 @@ export default function Account() {
             required
           />
 
+          <label><strong>Last name</strong></label>
           <input
             value={form.lastName}
             onChange={onChange("lastName")}
