@@ -1,101 +1,130 @@
-import React, { useState } from "react";
-import Modal from "./Modal";
+import React, { useEffect, useState } from "react";
+import "../../styles/App.css";
 
-export default function TaskModal({
-  payload,
-  events,
-  onClose,
-  onCreate,
-  onSave,
-  onDelete
-}) {
-  const isCreate = payload.create;
-  const task = payload.task;
+export default function TaskModal({ payload, events, onClose, onCreate, onSave, onDelete }) {
+  const isCreate = !!payload?.create;
+  const column = payload?.column ?? null;
+  const task = payload?.task ?? null;
 
-  const [title, setTitle] = useState(task?.title || "");
-  const [description, setDescription] = useState(task?.description || "");
-  const [eventId, setEventId] = useState(task?.eventId ?? "");
+  const forcedEventId = isCreate && column && column.eventId ? column.eventId : null;
+
+  const [form, setForm] = useState({
+    title: "",
+    description: "",
+    eventId: ""
+  });
+
+  useEffect(() => {
+    if (isCreate) {
+      setForm({
+        title: "",
+        description: "",
+        eventId: forcedEventId ? String(forcedEventId) : ""
+      });
+      return;
+    }
+
+    if (task) {
+      setForm({
+        title: task.title ?? "",
+        description: task.description ?? "",
+        eventId: task.eventId ? String(task.eventId) : ""
+      });
+    }
+  }, [isCreate, task, forcedEventId]);
+
+  const change = (key) => (e) => {
+    setForm((p) => ({ ...p, [key]: e.target.value }));
+  };
+
+  const submitCreate = async (e) => {
+    e.preventDefault();
+
+    const eventIdFinal = forcedEventId
+      ? forcedEventId
+      : form.eventId
+      ? parseInt(form.eventId, 10)
+      : null;
+
+    await onCreate({
+      title: form.title,
+      description: form.description,
+      eventId: eventIdFinal
+    });
+  };
+
+  const submitSave = async (e) => {
+    e.preventDefault();
+
+    const eventIdFinal = form.eventId ? parseInt(form.eventId, 10) : null;
+
+    await onSave(task.id, {
+      id: task.id,
+      title: form.title,
+      description: form.description,
+      taskStatus: task.taskStatus,
+      eventId: eventIdFinal,
+      userId: task.userId
+    });
+  };
 
   return (
-    <Modal onClose={onClose}>
-      <h2>{isCreate ? "Create Task" : "Edit Task"}</h2>
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <button className="modal-close" type="button" onClick={onClose}>
+          ×
+        </button>
 
-      {/* Title */}
-      <input
-        type="text"
-        placeholder="Task title"
-        className="modal-input"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-      />
+        <h2>{isCreate ? "Create Task" : "Edit Task"}</h2>
 
-      {/* Description */}
-      <textarea
-        placeholder="Description"
-        className="modal-textarea"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-      />
+        <form onSubmit={isCreate ? submitCreate : submitSave}>
+          <input
+            className="modal-input"
+            value={form.title}
+            onChange={change("title")}
+            placeholder="Title"
+            required
+          />
 
-      {/* Event Select */}
-      <select
-        value={eventId}
-        onChange={(e) => setEventId(Number(e.target.value))}
-        className="input-select"
-      >
-        <option value="">Choose event</option>
-        {events.map((ev) => (
-          <option key={ev.id} value={ev.id}>
-            {ev.title}
-          </option>
-        ))}
-      </select>
+          <textarea
+            className="modal-textarea"
+            value={form.description}
+            onChange={change("description")}
+            placeholder="Description"
+            rows={4}
+          />
 
-      {/* ACTION BUTTONS */}
-      <div className="modal-actions">
-        {isCreate ? (
-          <button
-            className="save-btn"
-            onClick={() => {
-              onCreate(payload.column.id, {
-                title,
-                description,
-                eventId
-              });
-              onClose(); // modalas užsidaro po CREATE
-            }}
+          <select
+            className="modal-select"
+            value={forcedEventId ? String(forcedEventId) : form.eventId}
+            onChange={change("eventId")}
+            disabled={!!forcedEventId}
           >
-            Create
-          </button>
-        ) : (
-          <>
-            <button
-              className="save-btn"
-              onClick={() => {
-                onSave(task.id, {
-                  ...task,
-                  title,
-                  description,
-                  eventId
-                });
-                onClose();
-              }}
-            >
-              Save changes
+            <option value="">—</option>
+            {events.map((ev) => (
+              <option key={ev.id} value={ev.id}>
+                {ev.title}
+              </option>
+            ))}
+          </select>
+
+          <div className="modal-actions">
+            <button className="save-btn" type="submit">
+              {isCreate ? "Create" : "Save"}
             </button>
 
-            <button
-              className="delete-btn"
-              onClick={() => {
-                onDelete(task.id);
-                onClose();
-              }}
-            >
-              Delete
-            </button>
-          </>
-        )}
+            {!isCreate && (
+              <button
+                className="delete-btn"
+                type="button"
+                onClick={() => onDelete(task.id)}
+              >
+                Delete
+              </button>
+            )}
+          </div>
+        </form>
       </div>
-    </Modal>
+    </div>
   );
 }

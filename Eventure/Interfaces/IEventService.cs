@@ -10,5 +10,7 @@ namespace Eventure.Interfaces
         Task<EventComponent> CreateAsync(EventComponent ev);
         Task<EventComponent?> UpdateAsync(int id, EventComponent ev, int userId);
         Task<bool> DeleteAsync(int id, int userId);
+        Task<IEnumerable<EventDto>> GetAllForUserAsync(int userId);
+        Task<EventDto?> GetByIdForUserAsync(int id, int userId);
     }
 }

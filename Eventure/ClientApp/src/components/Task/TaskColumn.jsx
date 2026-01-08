@@ -17,7 +17,9 @@ export default function TaskColumn({ column, tasks, onAddTask, onMoveTask, onOpe
       onDrop={handleDrop}
     >
     <div className="task-column-header">
-        <h3 className="task-column-title">{column.name}</h3>
+        <h3 className="task-column-title">
+          {column.eventTitle ?? column.name}
+        </h3>
 
         <button
         className="column-delete-btn"

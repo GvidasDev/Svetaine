@@ -532,6 +532,17 @@ body {
   box-shadow: 0 4px 10px var(--card-shadow);
 }
 
+.task-card-title {
+  font-weight: 700;
+}
+
+.task-card-sub {
+  margin-top: 0.35rem;
+  font-size: 0.9rem;
+  color: var(--text-light);
+  font-weight: 600;
+}
+
 .task-add-btn {
   margin-top: 1rem;
   background: rgba(255, 255, 255, 0.2);
@@ -748,4 +759,24 @@ body {
   text-align: center;
   color: var(--text-light);
   font-weight: 600;
+}
+
+.logout-btn {
+  background-color: var(--logout-color);
+  color: white;
+  font-weight: 700;
+  border: none;
+  border-radius: 8px;
+  padding: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 6px var(--card-shadow);
+  width: 100%;
+  max-width: 350px;
+  align-self: center;
+}
+
+.logout-btn:hover {
+  background-color: var(--logout-hover);
+  transform: scale(1.03);
 }

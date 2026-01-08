@@ -8,6 +8,6 @@ namespace Eventure.Dtos
         public int TaskStatus { get; set; }
         public int? EventId { get; set; }
         public int UserId { get; set; }
+        public string? EventTitle { get; set; }
     }
-
 }

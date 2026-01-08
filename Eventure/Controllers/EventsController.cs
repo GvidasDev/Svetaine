@@ -31,17 +31,18 @@ namespace Eventure.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<EventDto>>> GetAll()
         {
-            var list = await _service.GetAllAsync(CurrentUserId);
-            return Ok(list);
+            var all = await _service.GetAllForUserAsync(CurrentUserId);
+            return Ok(all);
         }
 
         [HttpGet("{id:int}")]
         public async Task<ActionResult<EventDto>> GetById(int id)
         {
-            var ev = await _service.GetByIdAsync(id, CurrentUserId);
+            var ev = await _service.GetByIdForUserAsync(id, CurrentUserId);
             if (ev == null) return NotFound();
             return Ok(ev);
         }
+
 
         [HttpPost]
         public async Task<ActionResult<EventComponent>> Create([FromBody] EventComponent ev)

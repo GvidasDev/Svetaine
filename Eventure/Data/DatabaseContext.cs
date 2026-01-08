@@ -10,7 +10,7 @@ public class DatabaseContext : DbContext
     public DbSet<User> Users => Set<User>();
     public DbSet<EventComponent> Events => Set<EventComponent>();
     public DbSet<TaskItem> Tasks => Set<TaskItem>();
-    public DbSet<TaskState> TaskStatuses { get; set; }
+    public DbSet<TaskState> TaskStatuses { get; set; } = null!;
     public DbSet<EventInvitation> EventInvitations { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -29,6 +29,10 @@ public class DatabaseContext : DbContext
 
         modelBuilder.Entity<EventComponent>().Property(p => p.Title).HasMaxLength(100).IsRequired();
         modelBuilder.Entity<EventComponent>().Property(p => p.Description).HasMaxLength(500);
+
+        modelBuilder.Entity<TaskState>()
+            .HasIndex(x => new { x.UserId, x.EventId })
+            .IsUnique();
 
         modelBuilder.Entity<EventInvitation>()
             .HasKey(x => new { x.EventId, x.UserId });

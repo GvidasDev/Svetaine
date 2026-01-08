@@ -65,6 +65,12 @@ export default function Account() {
     }
   };
 
+  const onLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("username");
+    navigate("/login");
+  };
+
   return (
     <div className="edit-container">
       <div className="edit-header edit-header--center">
@@ -103,6 +109,13 @@ export default function Account() {
 
           <button className="save-btn" type="submit" disabled={saving}>
             {saving ? "Saving..." : "Save changes"}
+          </button>
+
+          <button
+            type="button"
+            className="logout-btn"
+            onClick={onLogout}>
+            Log out
           </button>
 
           {message && <p className="muted-text">{message}</p>}

@@ -1,13 +1,14 @@
+using Eventure.Dtos;
 using Eventure.Models;
 
 namespace Eventure.Interfaces
 {
     public interface ITaskStateService
     {
-        Task<List<TaskState>> GetAllAsync();
-        Task<TaskState?> GetByIdAsync(int id);
-        Task<TaskState> CreateAsync(TaskState state);
-        Task<TaskState> UpdateAsync(int id, TaskState state);
-        Task DeleteAsync(int id);
+        Task<List<TaskStateDto>> GetAllAsync(int userId);
+        Task<TaskState?> GetByIdAsync(int id, int userId);
+        Task<TaskState> CreateAsync(TaskState state, int userId);
+        Task<TaskState> UpdateAsync(int id, TaskState state, int userId);
+        Task DeleteAsync(int id, int userId);
     }
 }

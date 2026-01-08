@@ -131,5 +131,71 @@ namespace Eventure.Services
             bool invited = await _context.EventInvitations.AnyAsync(i => i.EventId == eventId && i.UserId == userId);
             return invited;
         }
+
+        public async Task<IEnumerable<EventDto>> GetAllForUserAsync(int userId)
+        {
+            var today = DateTime.UtcNow.Date;
+
+            var ids = await _context.Events
+                .Where(e => e.UserId == userId)
+                .Select(e => e.Id)
+                .Concat(_context.EventInvitations.Where(i => i.UserId == userId).Select(i => i.EventId))
+                .Distinct()
+                .ToListAsync();
+
+            return await _context.Events
+                .Where(e => ids.Contains(e.Id))
+                .Select(e => new EventDto
+                {
+                    Id = e.Id,
+                    Title = e.Title,
+                    Description = e.Description,
+                    Date = e.Date,
+                    ImageUrl = e.ImageUrl,
+                    InvitedUsers = e.InvitedUsers,
+                    UserId = e.UserId,
+                    Creator = _context.Users.Where(u => u.Id == e.UserId).Select(u => u.Username).FirstOrDefault() ?? "Unknown",
+                    RemainingDays = Math.Max(0, (int)Math.Ceiling((e.Date.Date - today).TotalDays)),
+                    InvitedCount = _context.EventInvitations.Count(i => i.EventId == e.Id),
+                    CanInvite = e.UserId == userId
+                })
+                .ToListAsync();
+        }
+
+        public async Task<EventDto?> GetByIdForUserAsync(int id, int userId)
+        {
+            var today = DateTime.UtcNow.Date;
+
+            bool canAccess = await _context.Events.AnyAsync(e => e.Id == id && e.UserId == userId);
+            if (!canAccess)
+            {
+                canAccess = await _context.EventInvitations.AnyAsync(i => i.EventId == id && i.UserId == userId);
+            }
+
+            if (!canAccess) return null;
+
+            var e = await _context.Events.FirstOrDefaultAsync(x => x.Id == id);
+            if (e == null) return null;
+
+            var creator = await _context.Users
+                .Where(u => u.Id == e.UserId)
+                .Select(u => u.Username)
+                .FirstOrDefaultAsync() ?? "Unknown";
+
+            EventDto dto = new EventDto();
+            dto.Id = e.Id;
+            dto.Title = e.Title;
+            dto.Description = e.Description;
+            dto.Date = e.Date;
+            dto.ImageUrl = e.ImageUrl;
+            dto.InvitedUsers = e.InvitedUsers;
+            dto.UserId = e.UserId;
+            dto.Creator = creator;
+            dto.RemainingDays = Math.Max(0, (int)Math.Ceiling((e.Date.Date - today).TotalDays));
+            dto.InvitedCount = await _context.EventInvitations.CountAsync(i => i.EventId == e.Id);
+            dto.CanInvite = e.UserId == userId;
+
+            return dto;
+        }
     }
 }

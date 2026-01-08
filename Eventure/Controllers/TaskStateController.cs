@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Eventure.Interfaces;
 using Eventure.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -17,31 +18,41 @@ namespace Eventure.Controllers
             _service = service;
         }
 
+        private int GetCurrentUserId()
+        {
+            string? raw = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return int.Parse(raw!);
+        }
+
         [HttpGet]
         public async Task<ActionResult> GetAll()
         {
-            var states = await _service.GetAllAsync();
+            int userId = GetCurrentUserId();
+            var states = await _service.GetAllAsync(userId);
             return Ok(states);
         }
 
         [HttpPost]
         public async Task<ActionResult> Create(TaskState state)
         {
-            var created = await _service.CreateAsync(state);
+            int userId = GetCurrentUserId();
+            var created = await _service.CreateAsync(state, userId);
             return Ok(created);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id:int}")]
         public async Task<ActionResult> Update(int id, TaskState state)
         {
-            var updated = await _service.UpdateAsync(id, state);
+            int userId = GetCurrentUserId();
+            var updated = await _service.UpdateAsync(id, state, userId);
             return Ok(updated);
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:int}")]
         public async Task<ActionResult> Delete(int id)
         {
-            await _service.DeleteAsync(id);
+            int userId = GetCurrentUserId();
+            await _service.DeleteAsync(id, userId);
             return Ok();
         }
     }

@@ -13,7 +13,8 @@ export default function TaskCard({ task, onOpen }) {
       onDragStart={drag}
       onClick={onOpen}
     >
-      {task.title}
+      <div className="task-card-title">{task.title}</div>
+      {task.eventTitle && <div className="task-card-sub">{task.eventTitle}</div>}
     </div>
   );
 }

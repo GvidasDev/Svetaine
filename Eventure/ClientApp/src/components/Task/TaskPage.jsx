@@ -31,42 +31,48 @@ export default function TasksPage() {
     setColumns(c.data);
   };
 
-  const handleCreateTask = async (stateId, data) => {
-    await taskApi.create({
-      ...data,
-      taskStatus: stateId
-    });
-    loadData();
-  };
+  const handleCreateTask = async (column, data) => {
+  await taskApi.create({
+    title: data.title,
+    description: data.description,
+    taskStatus: column.id,
+    eventId: column.eventId ?? data.eventId ?? null
+  });
+
+  loadData();
+};
 
   const handleMoveTask = async (taskId, newStatus) => {
     const t = tasks.find(x => x.id === taskId);
     if (!t) return;
 
-    await taskApi.update(taskId, {
-      ...t,
-      taskStatus: newStatus
-    });
+    const payload = {
+      title: t.title,
+      description: t.description,
+      taskStatus: newStatus,
+      eventId: t.eventId ?? null
+    };
 
+    await taskApi.update(taskId, payload);
     loadData();
   };
 
-const handleCreateColumn = async (name) => {
+  const handleCreateColumn = async (name) => {
     await taskStateApi.create({ name });
     loadData();
-};
+  };
 
-const handleDeleteColumn = async (columnId) => {
+  const handleDeleteColumn = async (columnId) => {
     const hasTasks = tasks.some(t => t.taskStatus === columnId);
 
     if (hasTasks) {
-        alert("Negalima ištrinti kolonos, nes ji turi priskirtų užduočių.");
-        return;
+      alert("Negalima ištrinti kolonos, nes ji turi priskirtų užduočių.");
+      return;
     }
 
     await taskStateApi.delete(columnId);
     loadData();
-};
+  };
 
   return (
     <div className="tasks-page">
@@ -106,7 +112,10 @@ const handleDeleteColumn = async (columnId) => {
           payload={openTaskModal}
           events={events}
           onClose={() => setOpenTaskModal(null)}
-          onCreate={handleCreateTask}
+          onCreate={async (data) => {
+            await handleCreateTask(openTaskModal.column, data);
+            setOpenTaskModal(null);
+          }}
           onSave={async (id, updated) => {
             await taskApi.update(id, updated);
             setOpenTaskModal(null);
@@ -119,7 +128,6 @@ const handleDeleteColumn = async (columnId) => {
           }}
         />
       )}
-
     </div>
   );
 }
