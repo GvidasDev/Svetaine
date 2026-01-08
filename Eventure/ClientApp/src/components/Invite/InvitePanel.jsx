@@ -78,6 +78,7 @@ export default function InvitePanel({ eventId, canInvite, onChanged }) {
 
   return (
     <div className="invite-panel">
+      <h2>Invite users</h2>
       <div className="invited-box">
         <div className="invite-input-row">
           <input

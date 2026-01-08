@@ -465,6 +465,19 @@ body {
   height: 40px;
 }
 
+.task-card-title {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--text-dark);
+}
+
+.task-card-sub {
+  font-size: 0.85rem;
+  color: var(--text-light);
+  line-height: 1.25;
+  word-break: break-word;
+}
+
 .column-delete-btn {
   position: absolute;
   right: 8px;
