@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import Modal from "./Modal";
 import "../../styles/App.css";
 
 export default function TaskModal({ payload, events, onClose, onCreate, onSave, onDelete }) {
@@ -69,12 +70,7 @@ export default function TaskModal({ payload, events, onClose, onCreate, onSave, 
   };
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <button className="modal-close" type="button" onClick={onClose}>
-          ×
-        </button>
-
+    <Modal onClose={onClose}>
         <h2>{isCreate ? "Create Task" : "Edit Task"}</h2>
 
         <form onSubmit={isCreate ? submitCreate : submitSave}>
@@ -124,7 +120,6 @@ export default function TaskModal({ payload, events, onClose, onCreate, onSave, 
             )}
           </div>
         </form>
-      </div>
-    </div>
+    </Modal>
   );
 }

@@ -214,27 +214,6 @@ export default function EventEdit() {
           )}
         </div>
 
-        {canInvite && (
-          <div className="invite-input-row">
-            <input
-              type="email"
-              value={inviteEmail}
-              onChange={(e) => setInviteEmail(e.target.value)}
-              placeholder="Enter user email"
-            />
-
-            {foundUser && (
-              <button
-                type="button"
-                className="invite-add-btn"
-                onClick={handleAddInvite}
-              >
-                Add
-              </button>
-            )}
-          </div>
-        )}
-
         {invMsg && <div className="invite-message">{invMsg}</div>}
 
         <div className="event-creator">

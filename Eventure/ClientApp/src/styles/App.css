@@ -532,16 +532,7 @@ body {
   box-shadow: 0 4px 10px var(--card-shadow);
 }
 
-.task-card-title {
-  font-weight: 700;
-}
 
-.task-card-sub {
-  margin-top: 0.35rem;
-  font-size: 0.9rem;
-  color: var(--text-light);
-  font-weight: 600;
-}
 
 .task-add-btn {
   margin-top: 1rem;
@@ -729,6 +720,16 @@ body {
   cursor: pointer;
   font-weight: 700;
   line-height: 1;
+}
+
+.invite-input {
+  width: 100%;
+  padding: 0.7rem;
+  border-radius: 8px;
+  border: 1px solid var(--accent-mid);
+  background-color: var(--form-bg);
+  font-family: inherit;
+  font-size: 1rem;
 }
 
 .invite-input-row {

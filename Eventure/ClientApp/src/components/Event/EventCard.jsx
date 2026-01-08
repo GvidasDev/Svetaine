@@ -1,8 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import eventApi from "../../api/eventApi";
+import { API_ORIGIN } from "../../api/apiClient";
 import "../../styles/App.css";
 
-export default function EventCard({ event, onDelete }) {
+export default function EventCard({ event, onDelete, onInvite }) {
   const navigate = useNavigate();
 
   const handleDelete = async (e) => {
@@ -11,7 +12,6 @@ export default function EventCard({ event, onDelete }) {
     if (onDelete) onDelete();
   };
 
-  const API_ORIGIN = "https://localhost:7192";
   let imgSrc = null;
 
   if (event.imageUrl) {
@@ -26,32 +26,30 @@ export default function EventCard({ event, onDelete }) {
     <div className="event-card">
       <div className="event-left">
         <div className="event-image">
-          {imgSrc ? (
-            <img src={imgSrc} alt={event.title} />
-          ) : (
-            <span>IMG</span>
-          )}
+          {imgSrc ? <img src={imgSrc} alt={event.title} /> : <span>IMG</span>}
         </div>
 
         <div className="event-details">
           <h3>{event.title}</h3>
           <p>{event.description}</p>
-          <small>
-            📅 {new Date(event.date).toLocaleDateString()}
-          </small>
+          <small>📅 {new Date(event.date).toLocaleDateString()}</small>
           <br />
           <small>⏰ Remaining: {event.remainingDays} days</small>
         </div>
       </div>
 
       <div className="event-right">
-        <button
-          className="event-btn edit"
-          onClick={() => navigate(`/edit/${event.id}`)}
-        >
+        <button className="event-btn edit" onClick={() => navigate(`/edit/${event.id}`)}>
           Edit
         </button>
-        <button className="event-btn invite">Invite</button>
+
+        <button
+          className="event-btn invite"
+          type="button"
+          onClick={() => onInvite && onInvite(event)}>
+          Invite
+        </button>
+
         <button className="event-btn delete" onClick={handleDelete}>
           Delete
         </button>
