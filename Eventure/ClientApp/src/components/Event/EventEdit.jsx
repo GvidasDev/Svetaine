@@ -7,6 +7,11 @@ import expenseApi from "../../api/expenseApi";
 import { API_ORIGIN } from "../../api/apiClient";
 import "../../styles/App.css";
 
+import PageHeader from "../Layout/PageHeader";
+import EventForm from "./EventEditParts/EventForm";
+import FinancePanel from "./EventEditParts/FinancePanel";
+import BalancesPanel from "./EventEditParts/BalancesPanel";
+
 export default function EventEdit() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -55,18 +60,16 @@ export default function EventEdit() {
     fetchAll();
   }, [fetchAll]);
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
+  const handleEventChange = (name, value) => {
     if (name === "creator") return;
 
     setEvent((p) => ({
       ...p,
-      [name]: type === "checkbox" ? checked : value
+      [name]: value
     }));
   };
 
-  const handleFile = async (e) => {
-    const file = e.target.files?.[0];
+  const handleFile = async (file) => {
     if (!file) return;
 
     setPreview(URL.createObjectURL(file));
@@ -110,125 +113,29 @@ export default function EventEdit() {
 
   return (
     <div className="edit-container">
-      <div className="edit-header edit-header--center">
-        <button className="back-btn" onClick={() => navigate(-1)}>
-          ← Back
-        </button>
-        <h2 className="page-title">Edit Event</h2>
-      </div>
+      <PageHeader title="Edit Event" onBack={() => navigate(-1)} />
 
       <div className="event-edit-grid">
-        <div className="side-card">
-          <h3 className="side-title">Finansai</h3>
+        <FinancePanel
+          amount={amount}
+          note={note}
+          onAmountChange={setAmount}
+          onNoteChange={setNote}
+          onAdd={addExpense}
+          message={finMsg}
+          expenses={expenses}
+        />
 
-          <div className="finance-input-box">
-            <input
-              className="finance-input"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              placeholder="Suma"
-            />
+        <EventForm
+          event={event}
+          preview={preview}
+          invited={invited}
+          onChange={handleEventChange}
+          onPickFile={handleFile}
+          onSubmit={handleSave}
+        />
 
-            <input
-              className="finance-input"
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-              placeholder="Už ką"
-            />
-
-            <button
-              type="button"
-              className="finance-add-btn"
-              onClick={addExpense}
-            >
-              Add
-            </button>
-          </div>
-
-          {finMsg && <div className="invite-message">{finMsg}</div>}
-
-          <div className="finance-list">
-            {expenses.length === 0 ? (
-              <div className="invited-empty">—</div>
-            ) : (
-              expenses.map((x) => (
-                <div className="finance-item" key={x.id}>
-                  <div className="finance-top">
-                    <strong>{x.username}</strong>
-                    <strong>{Number(x.amount).toFixed(2)} €</strong>
-                  </div>
-                  <div className="finance-sub">{x.note || "—"}</div>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-
-        <form className="edit-form" onSubmit={handleSave}>
-          <label><strong>Title</strong></label>
-          <input name="title" value={event.title} onChange={handleChange} required />
-
-          <label><strong>Description</strong></label>
-          <textarea name="description" value={event.description} onChange={handleChange} />
-
-          <label><strong>Date</strong></label>
-          <input
-            type="date"
-            name="date"
-            value={event.date ? event.date.split("T")[0] : ""}
-            onChange={handleChange}
-            required
-          />
-
-          <label><strong>Image</strong></label>
-          <div className="event-image event-image--center">
-            {preview ? <img src={preview} alt="" /> : <span>IMG</span>}
-          </div>
-
-          <input type="file" accept="image/*" onChange={handleFile} />
-
-          <label><strong>Invited Users</strong></label>
-          <div className="invited-box">
-            {invited.length === 0 ? (
-              <div className="invited-empty">—</div>
-            ) : (
-              invited.map((u) => (
-                <div className="invited-item" key={u.userId}>
-                  <strong>{u.username}</strong>
-                </div>
-              ))
-            )}
-          </div>
-
-          <div className="event-creator event-creator--center">
-            <span><strong>Creator:</strong></span>
-            <strong>{event.creator || "—"}</strong>
-          </div>
-
-          <button type="submit" className="save-btn">Save Changes</button>
-        </form>
-
-        <div className="side-card">
-          <h3 className="side-title">Skolos</h3>
-
-          <div className="balance-list">
-            {balances.length === 0 ? (
-              <div className="invited-empty">—</div>
-            ) : (
-              balances.map((b) => (
-                <div className="balance-item" key={b.userId}>
-                  <div className="finance-top">
-                    <strong>{b.username}</strong>
-                    <strong>{Number(b.owes).toFixed(2)} €</strong>
-                  </div>
-                  <div className="finance-sub">
-                    Sumokėjo: {Number(b.paid).toFixed(2)} € · Dalies suma: {Number(b.share).toFixed(2)} €
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
+        <BalancesPanel balances={balances} />
       </div>
     </div>
   );
