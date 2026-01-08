@@ -11,14 +11,14 @@ export default function EventCard({ event, onDelete }) {
     if (onDelete) onDelete();
   };
 
-  const API_ORIGIN = "https://localhost:7192"; // backend hostas
+  const API_ORIGIN = "https://localhost:7192";
   let imgSrc = null;
 
   if (event.imageUrl) {
     if (event.imageUrl.startsWith("http")) {
       imgSrc = event.imageUrl;
     } else {
-      imgSrc = API_ORIGIN + event.imageUrl; // pvz. /uploads/xxx.jpg
+      imgSrc = API_ORIGIN + event.imageUrl;
     }
   }
 
@@ -62,7 +62,7 @@ export default function EventCard({ event, onDelete }) {
           👤 Creator: <strong>{event.creator ?? "—"}</strong>
         </span>
         <span className="invited">
-          🧑‍🤝‍🧑 Invited: <strong>{event.invitedUsers ?? "—"}</strong>
+          🧑‍🤝‍🧑 Invited: <strong>{event.invitedCount ?? 0}</strong>
         </span>
       </div>
     </div>

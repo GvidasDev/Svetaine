@@ -1,3 +1,5 @@
+using Eventure.Dtos.Invitations;
+
 namespace Eventure.Dtos
 {
     public class EventDto
@@ -12,5 +14,9 @@ namespace Eventure.Dtos
         public int UserId { get; set; }
         public string Creator { get; set; } = "Unknown";
         public int RemainingDays { get; set; }
+        public int InvitedCount { get; set; }
+        public List<InvitedUserDto> Invited { get; set; } = new List<InvitedUserDto>();
+        public bool CanEdit { get; set; }
+        public bool CanInvite { get; set; }
     }
 }

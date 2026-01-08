@@ -19,23 +19,27 @@ namespace Eventure.Controllers
             _service = service;
         }
 
-        private int CurrentUserId => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        private int CurrentUserId
+        {
+            get
+            {
+                string? raw = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                return int.Parse(raw!);
+            }
+        }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<EventDto>>> GetAll()
         {
-            var all = await _service.GetAllAsync();
-            var filtered = all.Where(e => e.UserId == CurrentUserId);
-            return Ok(filtered);
+            var list = await _service.GetAllAsync(CurrentUserId);
+            return Ok(list);
         }
 
         [HttpGet("{id:int}")]
         public async Task<ActionResult<EventDto>> GetById(int id)
         {
-            var ev = await _service.GetByIdAsync(id);
-            if (ev == null || ev.UserId != CurrentUserId)
-                return NotFound();
-
+            var ev = await _service.GetByIdAsync(id, CurrentUserId);
+            if (ev == null) return NotFound();
             return Ok(ev);
         }
 
@@ -44,36 +48,41 @@ namespace Eventure.Controllers
         {
             ev.Id = 0;
             ev.UserId = CurrentUserId;
-            var created = await _service.CreateAsync(ev);
 
+            var created = await _service.CreateAsync(ev);
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
         [HttpPut("{id:int}")]
         public async Task<ActionResult<EventComponent>> Update(int id, [FromBody] EventComponent update)
         {
-            var existing = await _service.GetByIdAsync(id);
-            if (existing == null || existing.UserId != CurrentUserId)
-                return NotFound();
+            update.Id = id;
 
-            update.UserId = CurrentUserId;
-            var updated = await _service.UpdateAsync(id, update);
-            if (updated == null) return NotFound();
-
-            return Ok(updated);
+            try
+            {
+                var updated = await _service.UpdateAsync(id, update, CurrentUserId);
+                if (updated == null) return NotFound();
+                return Ok(updated);
+            }
+            catch
+            {
+                return Forbid();
+            }
         }
 
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var existing = await _service.GetByIdAsync(id);
-            if (existing == null || existing.UserId != CurrentUserId)
-                return NotFound();
-
-            var success = await _service.DeleteAsync(id);
-            if (!success) return BadRequest();
-
-            return NoContent();
+            try
+            {
+                var success = await _service.DeleteAsync(id, CurrentUserId);
+                if (!success) return NotFound();
+                return NoContent();
+            }
+            catch
+            {
+                return Forbid();
+            }
         }
     }
 }

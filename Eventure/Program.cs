@@ -45,6 +45,7 @@ builder.Services.AddScoped<ITaskService, TaskService>();
 builder.Services.AddScoped<ITaskStateService, TaskStateService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IUploadService, UploadService>();
+builder.Services.AddScoped<IInvitationService, InvitationService>();
 
 builder.Services.AddAuthorization();
 builder.Services.AddControllers();

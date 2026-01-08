@@ -107,6 +107,20 @@ body {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+.event-creator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  color: var(--text-dark);
+  font-size: 0.95rem;
+}
+
+.event-creator strong {
+  font-size: 1.05rem;
+  color: var(--accent-dark);
+}
+
 .edit-container {
   background-color: var(--bg-color);
   min-height: 100vh;
@@ -161,6 +175,20 @@ body {
   border-color: var(--accent-dark);
   box-shadow: 0 0 4px rgba(183, 116, 102, 0.4);
   outline: none;
+}
+
+.edit-form .event-image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto 0.8rem auto;
+}
+
+.edit-form .event-image img {
+  max-width: 100%;
+  max-height: 180px;
+  border-radius: 10px;
+  object-fit: cover;
 }
 
 .save-btn {
@@ -649,4 +677,75 @@ body {
 .muted-text {
   margin: 0;
   color: var(--text-light);
+}
+
+.invited-box {
+  width: 100%;
+  border: 1px solid var(--accent-mid);
+  border-radius: 10px;
+  background: var(--form-bg);
+  padding: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.invited-empty {
+  color: var(--text-light);
+  text-align: center;
+  font-weight: 600;
+}
+
+.invited-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid var(--accent-light);
+  border-radius: 10px;
+  padding: 0.6rem 0.8rem;
+  background: var(--card-bg);
+}
+
+.invited-name {
+  color: var(--text-dark);
+}
+
+.invited-remove {
+  border: none;
+  background: transparent;
+  color: var(--delete-hover);
+  font-size: 1.4rem;
+  cursor: pointer;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.invite-input-row {
+  width: 100%;
+  display: flex;
+  gap: 0.8rem;
+  align-items: center;
+}
+
+.invite-add-btn {
+  border: none;
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  background: var(--green);
+  color: white;
+  box-shadow: 0 3px 8px var(--card-shadow);
+  white-space: nowrap;
+}
+
+.invite-add-btn:hover {
+  transform: scale(1.03);
+  background-color: var(--green-hover);
+}
+
+.invite-message {
+  text-align: center;
+  color: var(--text-light);
+  font-weight: 600;
 }
