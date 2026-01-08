@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import eventApi from "../../api/eventApi";
 import uploadApi from "../../api/uploadApi";
 import invitationApi from "../../api/invitationApi";
+import expenseApi from "../../api/expenseApi";
 import { API_ORIGIN } from "../../api/apiClient";
 import "../../styles/App.css";
 
@@ -23,208 +24,212 @@ export default function EventEdit() {
   const [preview, setPreview] = useState("");
 
   const [invited, setInvited] = useState([]);
-  const [inviteEmail, setInviteEmail] = useState("");
-  const [foundUser, setFoundUser] = useState(null);
-  const [invMsg, setInvMsg] = useState("");
 
-  useEffect(() => {
-    const fetchAll = async () => {
-      const res = await eventApi.getById(id);
-      const data = res.data;
+  const [expenses, setExpenses] = useState([]);
+  const [balances, setBalances] = useState([]);
 
-      setEvent(data);
+  const [amount, setAmount] = useState("");
+  const [note, setNote] = useState("");
+  const [finMsg, setFinMsg] = useState("");
 
-      const img = data.imageUrl || "";
-      if (img) setPreview(img.startsWith("http") ? img : API_ORIGIN + img);
-      else setPreview("");
+  const fetchAll = useCallback(async () => {
+    const ev = await eventApi.getById(id);
+    const data = ev.data;
 
-      const inv = await invitationApi.getInvited(id);
-      setInvited(inv.data || []);
-    };
+    setEvent(data);
 
-    fetchAll();
+    const img = data.imageUrl || "";
+    setPreview(img ? (img.startsWith("http") ? img : API_ORIGIN + img) : "");
+
+    const inv = await invitationApi.getInvited(id);
+    setInvited(inv.data || []);
+
+    const ex = await expenseApi.getAll(id);
+    setExpenses(ex.data || []);
+
+    const bal = await expenseApi.getBalances(id);
+    setBalances(bal.data || []);
   }, [id]);
 
   useEffect(() => {
-    const run = async () => {
-      setInvMsg("");
-      const e = (inviteEmail || "").trim();
-      if (!e) {
-        setFoundUser(null);
-        return;
-      }
-
-      try {
-        const res = await invitationApi.lookup(e);
-        setFoundUser(res.data);
-      } catch {
-        setFoundUser(null);
-      }
-    };
-
-    const t = setTimeout(run, 250);
-    return () => clearTimeout(t);
-  }, [inviteEmail]);
+    fetchAll();
+  }, [fetchAll]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-
     if (name === "creator") return;
 
-    setEvent((prev) => ({
-      ...prev,
+    setEvent((p) => ({
+      ...p,
       [name]: type === "checkbox" ? checked : value
     }));
   };
 
   const handleFile = async (e) => {
-    const file = e.target.files && e.target.files[0];
+    const file = e.target.files?.[0];
     if (!file) return;
 
     setPreview(URL.createObjectURL(file));
 
     const res = await uploadApi.uploadImage(file);
-
-    setEvent((prev) => ({
-      ...prev,
-      imageUrl: res.data.url
-    }));
+    setEvent((p) => ({ ...p, imageUrl: res.data.url }));
   };
 
-  const refreshInvited = async () => {
-    const inv = await invitationApi.getInvited(id);
-    setInvited(inv.data || []);
-  };
+  const addExpense = async () => {
+    setFinMsg("");
 
-  const handleAddInvite = async () => {
-    setInvMsg("");
-
-    const email = (inviteEmail || "").trim();
-    if (!email) return;
-    if (!foundUser) return;
-
-    const already = invited.some((x) => x.id === foundUser.id);
-    if (already) {
-      setInvMsg("Šis vartotojas jau pakviestas.");
+    const value = Number((amount || "").trim().replace(",", "."));
+    if (!Number.isFinite(value) || value <= 0) {
+      setFinMsg("Neteisinga suma.");
       return;
     }
 
     try {
-      await invitationApi.add(id, email);
-      setInviteEmail("");
-      setFoundUser(null);
-      await refreshInvited();
-      setInvMsg("Pakviesta.");
+      await expenseApi.add(id, { amount: value, note: (note || "").trim() });
+      setAmount("");
+      setNote("");
+      await fetchAll();
     } catch {
-      setInvMsg("Nepavyko pakviesti.");
-    }
-  };
-
-  const handleRemoveInvite = async (userId) => {
-    setInvMsg("");
-
-    try {
-      await invitationApi.remove(id, userId);
-      await refreshInvited();
-    } catch {
-      setInvMsg("Nepavyko pašalinti.");
+      setFinMsg("Nepavyko pridėti išlaidų.");
     }
   };
 
   const handleSave = async (e) => {
     e.preventDefault();
 
-    const payload = {
+    await eventApi.update(id, {
       title: event.title,
       description: event.description,
       date: event.date,
       imageUrl: event.imageUrl,
       isPublic: event.isPublic
-    };
+    });
 
-    await eventApi.update(id, payload);
     navigate("/");
   };
 
-  const canInvite = !!event.canInvite;
-
   return (
     <div className="edit-container">
-      <div className="edit-header">
+      <div className="edit-header edit-header--center">
         <button className="back-btn" onClick={() => navigate(-1)}>
           ← Back
         </button>
-        <h2>Edit Event</h2>
+        <h2 className="page-title">Edit Event</h2>
       </div>
 
-      <form className="edit-form" onSubmit={handleSave}>
-        <label><strong>Title</strong></label>
-        <input
-          type="text"
-          name="title"
-          value={event.title}
-          onChange={handleChange}
-          required
-        />
+      <div className="event-edit-grid">
+        <div className="side-card">
+          <h3 className="side-title">Finansai</h3>
 
-        <label><strong>Description</strong></label>
-        <textarea
-          name="description"
-          value={event.description}
-          onChange={handleChange}
-        />
+          <div className="finance-input-box">
+            <input
+              className="finance-input"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              placeholder="Suma"
+            />
 
-        <label><strong>Date</strong></label>
-        <input
-          type="date"
-          name="date"
-          value={event.date ? event.date.split("T")[0] : ""}
-          onChange={handleChange}
-          required
-        />
+            <input
+              className="finance-input"
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              placeholder="Už ką"
+            />
 
-        <label><strong>Image</strong></label>
+            <button
+              type="button"
+              className="finance-add-btn"
+              onClick={addExpense}
+            >
+              Add
+            </button>
+          </div>
 
-        <div className="event-image">
-          {preview ? <img src={preview} alt="preview" /> : <span>IMG</span>}
+          {finMsg && <div className="invite-message">{finMsg}</div>}
+
+          <div className="finance-list">
+            {expenses.length === 0 ? (
+              <div className="invited-empty">—</div>
+            ) : (
+              expenses.map((x) => (
+                <div className="finance-item" key={x.id}>
+                  <div className="finance-top">
+                    <strong>{x.username}</strong>
+                    <strong>{Number(x.amount).toFixed(2)} €</strong>
+                  </div>
+                  <div className="finance-sub">{x.note || "—"}</div>
+                </div>
+              ))
+            )}
+          </div>
         </div>
 
-        <input type="file" accept="image/*" onChange={handleFile} />
+        <form className="edit-form" onSubmit={handleSave}>
+          <label><strong>Title</strong></label>
+          <input name="title" value={event.title} onChange={handleChange} required />
 
-        <label><strong>Invited Users</strong></label>
+          <label><strong>Description</strong></label>
+          <textarea name="description" value={event.description} onChange={handleChange} />
 
-        <div className="invited-box">
-          {invited.length === 0 ? (
-            <div className="invited-empty">—</div>
-          ) : (
-            invited.map((u) => (
-              <div className="invited-item" key={u.id}>
-                <span className="invited-name"><strong>{u.username}</strong></span>
-                {canInvite && (
-                  <button
-                    type="button"
-                    className="invited-remove"
-                    onClick={() => handleRemoveInvite(u.id)}
-                  >
-                    ×
-                  </button>
-                )}
-              </div>
-            ))
-          )}
+          <label><strong>Date</strong></label>
+          <input
+            type="date"
+            name="date"
+            value={event.date ? event.date.split("T")[0] : ""}
+            onChange={handleChange}
+            required
+          />
+
+          <label><strong>Image</strong></label>
+          <div className="event-image event-image--center">
+            {preview ? <img src={preview} alt="" /> : <span>IMG</span>}
+          </div>
+
+          <input type="file" accept="image/*" onChange={handleFile} />
+
+          <label><strong>Invited Users</strong></label>
+          <div className="invited-box">
+            {invited.length === 0 ? (
+              <div className="invited-empty">—</div>
+            ) : (
+              invited.map((u) => (
+                <div className="invited-item" key={u.userId}>
+                  <strong>{u.username}</strong>
+                </div>
+              ))
+            )}
+          </div>
+
+          <div className="event-creator event-creator--center">
+            <span><strong>Creator:</strong></span>
+            <strong>{event.creator || "—"}</strong>
+          </div>
+
+          <button type="submit" className="save-btn">Save Changes</button>
+        </form>
+
+        <div className="side-card">
+          <h3 className="side-title">Skolos</h3>
+
+          <div className="balance-list">
+            {balances.length === 0 ? (
+              <div className="invited-empty">—</div>
+            ) : (
+              balances.map((b) => (
+                <div className="balance-item" key={b.userId}>
+                  <div className="finance-top">
+                    <strong>{b.username}</strong>
+                    <strong>{Number(b.owes).toFixed(2)} €</strong>
+                  </div>
+                  <div className="finance-sub">
+                    Sumokėjo: {Number(b.paid).toFixed(2)} € · Dalies suma: {Number(b.share).toFixed(2)} €
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
         </div>
-
-        {invMsg && <div className="invite-message">{invMsg}</div>}
-
-        <div className="event-creator">
-          <span><strong>Creator:</strong></span>
-          <strong>{event.creator ?? "—"}</strong>
-        </div>
-
-        <button type="submit" className="save-btn">
-          Save Changes
-        </button>
-      </form>
+      </div>
     </div>
   );
 }

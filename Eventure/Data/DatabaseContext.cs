@@ -12,6 +12,7 @@ public class DatabaseContext : DbContext
     public DbSet<TaskItem> Tasks => Set<TaskItem>();
     public DbSet<TaskState> TaskStatuses { get; set; } = null!;
     public DbSet<EventInvitation> EventInvitations { get; set; } = null!;
+    public DbSet<EventExpense> EventExpenses { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -46,6 +47,8 @@ public class DatabaseContext : DbContext
             .HasOne(x => x.User)
             .WithMany()
             .HasForeignKey(x => x.UserId);
+
+        modelBuilder.Entity<EventExpense>().Property(p => p.Note).HasMaxLength(200);
 
     }
 }
